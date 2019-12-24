@@ -1,0 +1,12 @@
+#login, #register {
+    display: none;
+}
+
+.note-wrapper {
+    display: flex;
+    width: 100%;
+}
+
+ul {
+    list-style-type: none;
+}

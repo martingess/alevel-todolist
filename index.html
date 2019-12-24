@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <section id="entry">
+        <ul>
+            <li id='navLogin'><a href="#login">Войти в аккаунт</a></li>
+            <li id='navRegister'><a href="#register">Регистрация</a></li>
+            <li id='navExit'><a href="#login">Выйти из аккаунта</a></li>
+        </ul>
+    </section>
+    <section id="login">
+        <form action="">
+            <div class="container">
+                <h2>LogIn</h2>
+                <label for="username"><b>Username</b></label>
+                <input id='loginUsername' type="text" placeholder="Enter Username" name="username" required>
+                <label for="password"><b>Password</b></label>
+                <input id='loginPassword' type="password" placeholder="Enter Password" name="password" required>
+                <button id="loginBtn">Login</a></button>
+            </div>
+        </form>
+    </section>
+    <section id="register">
+        <form action="">
+            <div class="container">
+                <h2>Регистрация</h2>
+                <label for="username"><b>Username</b></label>
+                <input id='registerUsername' type="text" placeholder="Enter Username" name="username" required>
+                <label for="psw"><b>Password</b></label>
+                <input id='registerPassword' type="password" placeholder="Enter Pa ssword" name="psw" required>
+                <button id='registerBtn' id="loginBtn">register</a></button>
+            </div>
+        </form>
+    </section>
+    <section id="todo">
+        <div id="noteAdd">
+            <input type="text" id='noteAddData'> <button id="noteAddBtn">Добавить</button></div>
+        <div>
+            <h3>Заметки</h3>
+            <ul id="noteList">
+            </ul>
+        </div>
+    </section>
+</body>
+<script type='module' src="./index.js"></script>
+
+</html>
