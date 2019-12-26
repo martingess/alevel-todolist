@@ -187,7 +187,6 @@ function loadLists(parrentElement) {
     }
     if (pageLoaded) {
         createAndAppendElement(notes[notes.length - 1], parrentElement)
-        createAndAppendElement(doneList[doneList.length - 1], control.todo.doneList)
     } else {
         notes.forEach(value => {
             createAndAppendElement(value, parrentElement)
