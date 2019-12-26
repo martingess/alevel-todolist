@@ -55,7 +55,7 @@ window.addEventListener("hashchange", moveTo);
 // При загрузке страницы
 let pageLoaded = false;
 let notes = [];
-window.doneList = [];
+let doneList = [];
 let userData = {
     userName: window.sessionStorage.getItem('logedInAs')
 };
