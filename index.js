@@ -108,6 +108,7 @@ function isLogedIn() {
             loadLists(control.todo.list);
             moveTo(null, 'todo');
             pageLoaded = true;
+            hideElement(control.navigation.login, control.navigation.register)
         }
     }
 }
@@ -122,7 +123,6 @@ function login() {
             window.sessionStorage.setItem('logedInAs', login)
             userData.userName = login;
             isLogedIn();
-            hideElement(control.navigation.login, control.navigation.register)
         } else {
             alert('Имя пользователя или пароль не верны')
         }
