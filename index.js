@@ -20,13 +20,13 @@ let control = {
     todo: {
         add: document.getElementById('noteAddBtn'),
         addInfo: document.getElementById('noteAddData'),
-        list: document.getElementById('noteList')
+        list: document.getElementById('noteList'),
+        doneList: document.getElementById('doneJob')
     },
     navigation: {
         login: document.getElementById('navLogin'),
         register: document.getElementById('navRegister'),
         exit: document.getElementById('navExit')
-
     }
 };
 
@@ -54,7 +54,8 @@ window.addEventListener("hashchange", moveTo);
 
 // При загрузке страницы
 let pageLoaded = false;
-window.notes = [];
+let notes = [];
+window.doneList = [];
 let userData = {
     userName: window.sessionStorage.getItem('logedInAs')
 };
@@ -72,6 +73,7 @@ function register() {
     registerData.login = control.register.username.value;
     registerData.password = control.register.password.value ? sha256(control.register.password.value) : '';
     registerData.notes = [];
+    registerData.doneList = [];
     if (registerData.login && registerData.password) {
         if (!getUserInfo(registerData.login)) {
             let registerDataJSON = JSON.stringify(registerData);
@@ -92,6 +94,7 @@ function hideElement(element) {
         elem.style.display = 'none'
     }
 }
+
 function showElement(element) {
     for (let elem of arguments) {
         elem.style.display = 'block'
@@ -102,8 +105,9 @@ function isLogedIn() {
     if (userData.userName) {
         if (pageLoaded === false) {
             getNotesFromLocalStorage();
-            loadList();
+            loadLists(control.todo.list);
             moveTo(null, 'todo');
+            pageLoaded = true;
         }
     }
 }
@@ -117,9 +121,7 @@ function login() {
             alert('Успех!');
             window.sessionStorage.setItem('logedInAs', login)
             userData.userName = login;
-            moveTo(null, 'todo');
-            getNotesFromLocalStorage();
-            loadList()
+            isLogedIn();
             hideElement(control.navigation.login, control.navigation.register)
         } else {
             alert('Имя пользователя или пароль не верны')
@@ -135,6 +137,7 @@ function login() {
 
 function sendNotesToLocalStorage() {
     let obj = getUserInfo(userData.userName);
+    obj.doneList = doneList;
     obj.notes = notes;
     window.localStorage.setItem(userData.userName, JSON.stringify(obj))
 }
@@ -142,42 +145,54 @@ function sendNotesToLocalStorage() {
 function getNotesFromLocalStorage() {
     let obj = getUserInfo(userData.userName);
     notes = obj ? obj.notes : [];
+    doneList = obj ? obj.doneList : [];
 }
 
-function loadList() {
-    function createAndAppendElement(text) {
-        let elWrapper = document.createElement('li')
+function loadLists(parrentElement) {
+    function createAndAppendElement(text, parrentElement) {
+        let elWrapper = document.createElement('li') //создаем обёртку, в неё кладём текст заметки и кнопку "удалить"
         elWrapper.classList.add('note-wrapper')
         let el = document.createElement('div');
         el.classList.add('user-note');
         el.textContent = text;
-        let btn = document.createElement('button')
-        btn.textContent = "Удалить"
-        btn.classList.add('delete-note-btn')
+
+        function createBtn() {
+            let btn = document.createElement('button')
+            btn.textContent = "Удалить"
+            btn.classList.add('delete-note-btn')
+            btn.addEventListener('click', () => {
+                doneList.push(...notes.splice(notes.indexOf(btn.previousSibling.textContent), 1));
+                sendNotesToLocalStorage();
+                btn.closest('li').remove();
+                createAndAppendElement(doneList[doneList.length - 1], control.todo.doneList)
+            })
+            return btn;
+        }
+
         elWrapper.append(el);
-        elWrapper.append(btn);
-        control.todo.list.prepend(elWrapper);
-        btn.addEventListener('click', () => {
-            notes.splice(notes.indexOf(btn.previousSibling.textContent), 1)
-            sendNotesToLocalStorage();
-            btn.closest('li').remove();
-        })
-        pageLoaded = true;
+        parrentElement.prepend(elWrapper);
+        if (parrentElement !== control.todo.doneList) {
+            let btn = createBtn();
+            elWrapper.append(btn);
+        }
     }
     if (pageLoaded) {
-        createAndAppendElement(notes[notes.length - 1])
-
+        createAndAppendElement(notes[notes.length - 1], parrentElement)
+        createAndAppendElement(doneList[doneList.length - 1], control.todo.doneList)
     } else {
         notes.forEach(value => {
-            createAndAppendElement(value)
+            createAndAppendElement(value, parrentElement)
+        })
+        doneList.forEach(value=>{
+            createAndAppendElement(value, control.todo.doneList)
         })
     }
 }
 
 function createNote(text) {
     notes.push(text);
-    sendNotesToLocalStorage()
-    loadList();
+    sendNotesToLocalStorage();
+    loadLists(control.todo.list);
 }
 
 // События
@@ -202,6 +217,7 @@ control.navigation.exit.addEventListener('click', () => {
     }
     window.sessionStorage.removeItem('logedInAs')
     notes = [];
+    doneList = [];
     pageLoaded = false;
     showElement(control.navigation.login, control.navigation.register)
 })
