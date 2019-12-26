@@ -26,9 +26,21 @@ let control = {
     navigation: {
         login: document.getElementById('navLogin'),
         register: document.getElementById('navRegister'),
-        exit: document.getElementById('navExit')
+        exit: document.getElementById('navExit'),
+        currentUser: document.getElementById('currentUser')
     }
 };
+
+// При загрузке страницы
+let pageLoaded = false;
+let notes = [];
+let doneList = [];
+let userData = {
+    userName: window.sessionStorage.getItem('logedInAs')
+};
+moveTo();
+isLogedIn();
+window.addEventListener("hashchange", moveTo);
 
 // Перемещение по приложению
 function moveTo(event, toAdress) {
@@ -50,17 +62,6 @@ function moveTo(event, toAdress) {
     }
 }
 
-window.addEventListener("hashchange", moveTo);
-
-// При загрузке страницы
-let pageLoaded = false;
-let notes = [];
-let doneList = [];
-let userData = {
-    userName: window.sessionStorage.getItem('logedInAs')
-};
-moveTo();
-isLogedIn();
 // Регистрация
 
 function getUserInfo(userName) {
@@ -108,8 +109,16 @@ function isLogedIn() {
             loadLists(control.todo.list);
             moveTo(null, 'todo');
             pageLoaded = true;
-            hideElement(control.navigation.login, control.navigation.register)
+            hideElement(control.navigation.login, control.navigation.register);
+            showElement(control.navigation.exit)
+            control.navigation.currentUser.textContent = `Текущий пользователь: ${userData.userName}`
+            showElement(control.navigation.currentUser)
         }
+    } else {
+        showElement(control.navigation.login, control.navigation.register);
+        hideElement(control.navigation.exit)
+        control.navigation.currentUser.textContent = ``
+        hideElement(control.navigation.currentUser)
     }
 }
 
@@ -215,9 +224,12 @@ control.navigation.exit.addEventListener('click', () => {
     while (control.todo.list.firstChild) {
         control.todo.list.firstChild.remove();
     }
+    while (control.todo.doneList.firstChild) {
+        control.todo.doneList.firstChild.remove();
+    }
     window.sessionStorage.removeItem('logedInAs')
     notes = [];
     doneList = [];
     pageLoaded = false;
-    showElement(control.navigation.login, control.navigation.register)
+    isLogedIn()
 })
